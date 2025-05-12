@@ -1,5 +1,24 @@
 import React, { useState, useEffect } from "react";
 
+// Type definitions
+interface Variant {
+  name: string;
+  visitors: number;
+  conversions: number;
+}
+
+interface SignificanceResult {
+  name: string;
+  conversionRate: string;
+  improvement: string;
+  confident: string;
+  pValue: string;
+}
+
+interface ZScoreLookup {
+  [key: number]: number;
+}
+
 const App = () => {
   // Journey Further brand colours
   const colors = {
@@ -30,25 +49,25 @@ const App = () => {
   };
 
   // Sample Size calculator state
-  const [baselineConversion, setBaselineConversion] = useState(5);
-  const [minimumDetectableEffect, setMinimumDetectableEffect] = useState(20);
-  const [confidenceLevel, setConfidenceLevel] = useState(95);
-  const [statisticalPower, setStatisticalPower] = useState(80);
-  const [sampleSize, setSampleSize] = useState(0);
-  const [totalSampleSize, setTotalSampleSize] = useState(0);
-  const [variantCount, setVariantCount] = useState(2);
+  const [baselineConversion, setBaselineConversion] = useState<number>(5);
+  const [minimumDetectableEffect, setMinimumDetectableEffect] = useState<number>(20);
+  const [confidenceLevel, setConfidenceLevel] = useState<number>(95);
+  const [statisticalPower, setStatisticalPower] = useState<number>(80);
+  const [sampleSize, setSampleSize] = useState<number>(0);
+  const [totalSampleSize, setTotalSampleSize] = useState<number>(0);
+  const [variantCount, setVariantCount] = useState<number>(2);
 
   // Statistical Significance calculator state
-  const [variants, setVariants] = useState([
+  const [variants, setVariants] = useState<Variant[]>([
     { name: "Control", visitors: 5000, conversions: 500 },
     { name: "Variant 1", visitors: 5000, conversions: 600 },
   ]);
-  const [sigResults, setSigResults] = useState([]);
+  const [sigResults, setSigResults] = useState<SignificanceResult[]>([]);
 
   // Calculate sample size for A/B test
-  const calculateSampleSize = () => {
+  const calculateSampleSize = (): void => {
     // Z-score lookup based on confidence level and power
-    const zScoreAlpha = {
+    const zScoreAlpha: ZScoreLookup = {
       80: 1.28,
       85: 1.44,
       90: 1.65,
@@ -56,7 +75,7 @@ const App = () => {
       99: 2.58,
     };
 
-    const zScoreBeta = {
+    const zScoreBeta: ZScoreLookup = {
       80: 0.84,
       85: 1.04,
       90: 1.28,
@@ -84,9 +103,9 @@ const App = () => {
   };
 
   // Calculate statistical significance
-  const calculateSignificance = () => {
+  const calculateSignificance = (): void => {
     const control = variants[0];
-    const results = [];
+    const results: SignificanceResult[] = [];
 
     for (let i = 1; i < variants.length; i++) {
       const variant = variants[i];
@@ -132,7 +151,7 @@ const App = () => {
   };
 
   // Normal cumulative distribution function
-  const normCDF = (x) => {
+  const normCDF = (x: number): number => {
     const t = 1 / (1 + 0.2316419 * Math.abs(x));
     const d = 0.3989423 * Math.exp((-x * x) / 2);
     let prob =
@@ -145,8 +164,8 @@ const App = () => {
   };
 
   // Handle variant count change
-  const handleVariantCountChange = (count) => {
-    const newCount = parseInt(count);
+  const handleVariantCountChange = (count: string | number): void => {
+    const newCount = parseInt(count.toString());
     setVariantCount(newCount);
 
     // Update variants array
@@ -168,7 +187,7 @@ const App = () => {
   };
 
   // Handle variant data change
-  const handleVariantChange = (index, field, value) => {
+  const handleVariantChange = (index: number, field: string, value: number): void => {
     const newVariants = [...variants];
     newVariants[index] = {
       ...newVariants[index],
@@ -179,7 +198,7 @@ const App = () => {
 
   // Use media query for responsive layout
   useEffect(() => {
-    const handleResize = () => {
+    const handleResize = (): void => {
       const container = document.getElementById("calculator-container");
       if (container) {
         if (window.innerWidth < 768) {
